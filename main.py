@@ -1,3 +1,4 @@
+from curses.ascii import EM
 from private import TOKEN
 from get_day import get_today_events
 
@@ -8,7 +9,7 @@ import asyncio
 from random import choice
 
 bot = commands.Bot(command_prefix="$")
-WHEN = time(22, 23, 0)  # 4:00 PM
+WHEN = time(12, 13, 0)
 channel_id = 951945350468481044  # Put your channel id here
 
 emojis = []
@@ -21,18 +22,21 @@ async def called_once_a_day():  # Fired every day
     await bot.wait_until_ready()
 
     events = get_today_events()
+    # Note: It's more efficient to do bot.get_guild(guild_id).get_channel(channel_id) as there's less looping involved, but just get_channel still works fine
+    channel = bot.get_channel(channel_id)
+
+    description = ""
+
     if len(events) > 0:
-        # Note: It's more efficient to do bot.get_guild(guild_id).get_channel(channel_id) as there's less looping involved, but just get_channel still works fine
-        channel = bot.get_channel(channel_id)
+        description = "\n".join([f"- {e} {choice(emojis)}" for e in events])
+    else:
+        description = f"Y'a rien à fêter aujourd'hui {choice(emojis)}"
 
-        embed = Embed(
-            title=datetime.today().strftime("On est le %d/%m et on fête 🥳"),
-            # url="https://www.journee-mondiale.com/", 
-            description="\n".join([f"- {e} {choice(emojis)}"  for e in events]))
-        # for i, event in enumerate(events):
-        #     embed.add_field(name=str(i+1), value=event, inline=False)
-
-        await channel.send(embed=embed)
+    embed = Embed(
+        title=datetime.today().strftime("On est le %d/%m et on fête 🥳"),
+        description=description
+        )
+    await channel.send(embed=embed)
 
 
 async def background_task():
