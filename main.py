@@ -1,15 +1,16 @@
-from curses.ascii import EM
 from private import TOKEN
 from get_day import get_today_events
 
-from discord import Embed
+from discord import Embed, Intents
 from discord.ext import commands
 from datetime import datetime, time, timedelta
 import asyncio
 from random import choice
 
-bot = commands.Bot(command_prefix="$")
-WHEN = time(12, 13, 0)
+intents = Intents.all()
+
+bot = commands.Bot(command_prefix="$", intents=intents)
+WHEN = time(16, 0, 0) 
 channel_id = 951945350468481044  # Put your channel id here
 
 emojis = []
@@ -41,7 +42,6 @@ async def called_once_a_day():  # Fired every day
 
 async def background_task():
     now = datetime.now()
-    print(now)
     # Make sure loop doesn't start after {WHEN} as then it will send immediately the first time as negative seconds will make the sleep yield instantly
     if now.time() > WHEN:
         tomorrow = datetime.combine(now.date() + timedelta(days=1), time(0))
@@ -52,8 +52,7 @@ async def background_task():
     while True:
         # You can do now() or a specific timezone if that matters, but I'll leave it with utcnow
         now = datetime.now()
-        target_time = datetime.combine(
-            now.date(), WHEN)  # 6:00 PM today (In UTC)
+        target_time = datetime.combine(now.date(), WHEN)
         seconds_until_target = (target_time - now).total_seconds()
         # Sleep until we hit the target time
         await asyncio.sleep(seconds_until_target)
