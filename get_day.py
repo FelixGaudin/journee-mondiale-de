@@ -28,6 +28,9 @@ def get_today_events():
 
     container = soup.find("div", {"id": "journeesDuJour"})
 
+    if container == None:
+        return use_static_db()
+
     potentials = container.find_all('h2')
 
     events = []
