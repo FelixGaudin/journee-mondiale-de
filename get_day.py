@@ -9,8 +9,9 @@ SITE = "https://www.journee-mondiale.com/"
 
 def use_static_db():
 
-    current_day = datetime.now().day
-    current_month = datetime.now().month
+    # as str because of json format
+    current_day   = str(datetime.now().day)
+    current_month = str(datetime.now().month)
 
     if not os.path.exists(day_scraper.OUTFILE):
         day_scraper.scrap()
